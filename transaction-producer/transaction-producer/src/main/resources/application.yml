@@ -1,0 +1,21 @@
+spring:
+  profiles:
+    active: local
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+  kafka:
+    topic: "transaction_logs"
+    producer:
+      bootstrap-servers: localhost:9092, localhost:9093, localhost:9094
+      key-serializer: org.apache.kafka.common.serialization.UUIDSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
+        retries: 10
+    admin:
+      properties:
+        bootstrap-servers: localhost:9092, localhost:9093, localhost:9094
