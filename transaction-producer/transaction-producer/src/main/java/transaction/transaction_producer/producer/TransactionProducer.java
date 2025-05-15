@@ -29,8 +29,12 @@ public class TransactionProducer {
 
         var producerRecord = buildProducerRecord(transaction.id(),transaction);
 
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         var completableFuture = kafkaTemplate.send(producerRecord);
-
         completableFuture.whenComplete((sendResult, throwable) -> {
             if(throwable != null){
                 handleFailure(transaction.id(), transaction.toString(), throwable);

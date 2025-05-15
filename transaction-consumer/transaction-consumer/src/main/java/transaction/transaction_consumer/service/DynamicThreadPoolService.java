@@ -12,7 +12,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class DynamicThreadPoolService {
 
@@ -41,7 +40,6 @@ public class DynamicThreadPoolService {
             executorService.submit(task);
         } else {
             log.warn("Cannot submit task - executor service is not available");
-            // Execute directly if no executor available
             task.run();
         }
     }

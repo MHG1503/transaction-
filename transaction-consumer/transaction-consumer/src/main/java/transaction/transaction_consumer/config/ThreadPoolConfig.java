@@ -12,8 +12,6 @@ import transaction.transaction_consumer.entity.ThreadConfig;
 import transaction.transaction_consumer.repository.ThreadConfigRepository;
 import transaction.transaction_consumer.service.DynamicThreadPoolService;
 
-import javax.swing.text.html.Option;
-import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -31,16 +29,17 @@ public class ThreadPoolConfig {
     @PostConstruct
     public void init() {
         // Initialize thread pool with default size or from database
-        Optional<ThreadConfig> threadCountOptional = threadConfigRepository.findByThreadConfigId(1);
-        int threadCount = threadCountOptional.get().getThreadCount();
+        int threadCount = threadConfigRepository.findById(1)
+                .map(ThreadConfig::getThreadCount)
+                .orElse(defaultThreadCount);
         dynamicThreadPoolService.updateThreadPool(threadCount);
         log.info("Initialized thread pool with {} threads", threadCount);
     }
 
-    @Bean
-    public ExecutorService transactionProcessorExecutor() {
-        return Executors.newFixedThreadPool(defaultThreadCount);
-    }
+//    @Bean
+//    public ExecutorService transactionProcessorExecutor() {
+//        return Executors.newFixedThreadPool(defaultThreadCount);
+//    }
 
     @Scheduled(fixedDelay = 10000)
     public void checkForThreadPoolConfigChanges() {

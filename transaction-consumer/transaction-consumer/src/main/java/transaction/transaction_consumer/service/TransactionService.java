@@ -16,7 +16,7 @@ public class TransactionService {
 
 
     public void processTransaction(ConsumerRecord<UUID, Transaction> consumerRecord){
-        log.info("transaction: {} ",consumerRecord.value());
+//        log.info("transaction: {} ",consumerRecord.value());
         var transaction = consumerRecord.value();
         repository.save(transaction);
         log.info("Successfully Persisted the transaction: {} ",transaction);

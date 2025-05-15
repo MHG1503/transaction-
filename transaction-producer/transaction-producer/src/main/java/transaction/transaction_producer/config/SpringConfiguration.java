@@ -16,6 +16,7 @@ public class SpringConfiguration {
     public NewTopic transactionsLog(){
         return TopicBuilder
                 .name(topic)
+                .replicas(3)
                 .partitions(3)
                 .build();
     }
