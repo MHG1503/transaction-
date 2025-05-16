@@ -26,27 +26,30 @@ public class ThreadPoolConfig {
     @Value("${app.thread.default-count:4}")
     private int defaultThreadCount;
 
+    // Khi start app -> chay method de lay so thread se dung trong executorService (thread pool)
     @PostConstruct
     public void init() {
-        // Initialize thread pool with default size or from database
+        // Neu trong DB da co record ThreadConfig -> lay ra || neu khong co thi mac dinh la 4 thread trong pool
         int threadCount = threadConfigRepository.findById(1)
                 .map(ThreadConfig::getThreadCount)
                 .orElse(defaultThreadCount);
+
+        // Tao threadPool vs so thread da lay
         dynamicThreadPoolService.updateThreadPool(threadCount);
         log.info("Initialized thread pool with {} threads", threadCount);
     }
 
-//    @Bean
-//    public ExecutorService transactionProcessorExecutor() {
-//        return Executors.newFixedThreadPool(defaultThreadCount);
-//    }
-
+    // chay moi 10s de cap nhat so luong thread se dung de xu ly message
     @Scheduled(fixedDelay = 10000)
     public void checkForThreadPoolConfigChanges() {
+        // Tim kiem record threadConfig de lay ra dong so thread dang dung hien tai trong Database
         threadConfigRepository.findById(1).ifPresent(config -> {
             int currentThreadCount = dynamicThreadPoolService.getCurrentThreadCount().get();
             int configThreadCount = config.getThreadCount();
 
+            // Kiem tra xem so thread hien tai dang dung va so thread lay tu database co khac nhau ko
+            // != cap nhat lai thread pool vs so luong thread tuong ung trong DB
+            // == khong lam gi ca
             if (currentThreadCount != configThreadCount) {
                 log.info("Thread count changed in database from {} to {}, updating pool",
                         currentThreadCount, configThreadCount);

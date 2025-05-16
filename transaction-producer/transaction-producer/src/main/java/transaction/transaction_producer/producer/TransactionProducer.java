@@ -29,15 +29,17 @@ public class TransactionProducer {
 
         var producerRecord = buildProducerRecord(transaction.id(),transaction);
 
-        try {
-            Thread.sleep(200);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+//        try {
+//            Thread.sleep(200);
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+//        }
         var completableFuture = kafkaTemplate.send(producerRecord);
         completableFuture.whenComplete((sendResult, throwable) -> {
             if(throwable != null){
                 handleFailure(transaction.id(), transaction.toString(), throwable);
+            }else{
+                handleSuccess(transaction.id(),transaction.toString(),sendResult);
             }
         });
         return completableFuture;
@@ -50,7 +52,7 @@ public class TransactionProducer {
             Transaction tx = generateRandomTransaction();
             CompletableFuture<?> future = sendTransaction(tx);
             futures.add(future);
-            log.info("Sending Message: {}", tx);
+            log.info((i + 1) +" Sending Message: {}", tx);
         }
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
         System.out.println("Gửi xong 1000 transaction");
@@ -61,7 +63,7 @@ public class TransactionProducer {
                 .id(null)
                 .userId(UUID.randomUUID())
                 .amount(Math.random() * 1000)
-                .timeStamp(LocalDateTime.now())
+                .timeStamp(null)
                 .build();
     }
 
@@ -69,7 +71,7 @@ public class TransactionProducer {
         return new ProducerRecord<>(topic,key,transaction);
     }
 
-    private void handleSuccess(UUID key, String value, SendResult<Integer, String> sendResult) {
+    private void handleSuccess(UUID key, String value, SendResult<UUID, Transaction> sendResult) {
         log.info("Message Sent Successfully for the key: {}, the value : {}, partition is {}",key,value,sendResult.getRecordMetadata().partition());
     }
 

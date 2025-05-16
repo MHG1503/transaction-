@@ -12,6 +12,7 @@ public class SpringConfiguration {
     @Value("${spring.kafka.topic}")
     public String topic;
 
+    // tao topic transactions_log
     @Bean
     public NewTopic transactionsLog(){
         return TopicBuilder

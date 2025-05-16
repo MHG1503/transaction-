@@ -28,10 +28,14 @@ spring:
       ack-mode: manual_immediate
   datasource:
     url: jdbc:mysql://localhost:3306/transactions
-    username: root
+    username: mhg1503
     password: 1503
     driver-class-name: com.mysql.cj.jdbc.Driver
+
   jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
     hibernate:
       ddl-auto: update
     show-sql: true

@@ -6,6 +6,8 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.stereotype.Service;
 import transaction.transaction_consumer.entity.Transaction;
 import transaction.transaction_consumer.repository.TransactionRepository;
+
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
@@ -14,10 +16,10 @@ import java.util.UUID;
 public class TransactionService {
     private final TransactionRepository repository;
 
-
     public void processTransaction(ConsumerRecord<UUID, Transaction> consumerRecord){
-//        log.info("transaction: {} ",consumerRecord.value());
         var transaction = consumerRecord.value();
+        transaction.setTimeStamp(LocalDateTime.now());
+        // Luu vao db
         repository.save(transaction);
         log.info("Successfully Persisted the transaction: {} ",transaction);
 
