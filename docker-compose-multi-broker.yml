@@ -1,6 +1,20 @@
 version: '2.1'
 
 services:
+  mysql:
+    image: mysql:8.0         
+    container_name: mysql_db
+    restart: always          
+    ports:
+      - "3306:3306"          
+    environment:
+      MYSQL_ROOT_PASSWORD: 1503   
+      MYSQL_DATABASE: transactions       
+      MYSQL_USER: mhg1503          
+      MYSQL_PASSWORD: 1503     
+    volumes:
+      - db_data:/var/lib/mysql       
+  
   zoo1:
     image: confluentinc/cp-zookeeper:7.3.2
     platform: linux/amd64
@@ -68,3 +82,5 @@ services:
       KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
     depends_on:
       - zoo1
+volumes:
+  db_data:
